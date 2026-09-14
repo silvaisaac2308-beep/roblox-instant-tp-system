@@ -1,132 +1,98 @@
-# Sistema de Teleporte Instant TP para Roblox - Steal a Brainrot Style
+# 🚀 Guia Rápido de Instalação - Sistema Instant TP
 
-Sistema completo de GUI Arcade para teleporte com interface moderna e funcionalidades automáticas de coleta.
-
-## 📋 Funcionalidades
-
-✅ **Salvar Posição** - Armazena a posição atual do jogador
-✅ **Instant TP** - Teleporta para a posição salva
-✅ **Detecção Automática de Brainrot** - Teleporta automaticamente ao pegar um item
-✅ **GUI Arcade Moderna** - Interface estilo Steal a Brainrot
-✅ **Compatível com Celular** - Funciona em dispositivos móveis
-✅ **Design Escuro com Neon** - Estilo visual moderno
-✅ **Sem Reset de Personagem** - Teleporte seguro
-
-## 🎮 Onde Colocar os Scripts
-
-### 1. **GUI Script** (LocalScript)
-**Localização:** `StarterGui` → Nova ScreenGui → Dentro dela, coloque este LocalScript
-**Arquivo:** `src/GUI_InstantTP_Script.lua`
-
-### 2. **Teleporte Script** (LocalScript)
-**Localização:** `StarterPlayer` → `StarterCharacterScripts`
-**Arquivo:** `src/Teleport_Handler_Script.lua`
-
-### 3. **Brainrot Detector** (Script no Servidor)
-**Localização:** `ServerScriptService` ou dentro de cada Brainrot como Script normal
-**Arquivo:** `src/Brainrot_Detector_Script.lua`
-
-## 🛠️ Configuração Passo a Passo
-
-### Passo 1: Criar a ScreenGui
-1. Em StarterGui, clique com botão direito
-2. Selecione "Insert Object" → "ScreenGui"
-3. Renomeie para "InstantTPGui"
-4. Propriedades:
-   - ResetOnSpawn: false
-   - IgnoreGuiInset: false
-
-### Passo 2: Inserir o LocalScript GUI
-1. Dentro de InstantTPGui, clique com botão direito
-2. Selecione "Insert Object" → "LocalScript"
-3. Cole o conteúdo de `GUI_InstantTP_Script.lua`
-
-### Passo 3: Configurar Teleporte Handler
-1. Vá para StarterPlayer
-2. Clique com botão direito em StarterCharacterScripts
-3. Selecione "Insert Object" → "LocalScript"
-4. Cole o conteúdo de `Teleport_Handler_Script.lua`
-
-### Passo 4: Configurar Detecção de Brainrot
-1. Para cada item Brainrot no seu jogo:
-   - Insira um Script normal (não LocalScript) nele
-   - Cole o conteúdo de `Brainrot_Detector_Script.lua`
-   - Na linha `local BASE_POSITION = Vector3.new(0, 5, 0)` ajuste a posição da sua base
-
-### Passo 5: Testar
-1. Clique em "Play" no Roblox Studio
-2. Na GUI que aparecer, clique "SALVAR POS"
-3. Afaste-se e clique "INSTANT TP"
-4. Pegue um Brainrot (deve teleportar automaticamente)
-
-## ⚙️ Personalizações
-
-### Mudar Cor do Neon
-Abra `GUI_InstantTP_Script.lua` e procure por:
-```lua
-backgroundColor = Color3.fromRGB(20, 20, 30)  -- Cor de fundo
-neonColor = Color3.fromRGB(0, 255, 255)       -- Cor do neon (Cyan)
-buttonColor = Color3.fromRGB(255, 20, 147)    -- Cor dos botões (Pink)
-```
-
-### Mudar Posição da Base
-Abra `Brainrot_Detector_Script.lua` e altere:
-```lua
-local BASE_POSITION = Vector3.new(0, 5, 0)  -- Mude para sua base
-```
-
-### Mudar Velocidade da Animação
-Abra `GUI_InstantTP_Script.lua` e altere:
-```lua
-game:GetService("TweenService"):Create(
-    screenGui,
-    TweenInfo.new(0.5),  -- Mude este valor para velocidade
-    {Position = UDim2.new(0, 0, 0, 0)}
-):Play()
-```
-
-## 📱 Compatibilidade Mobile
-
-Os scripts já incluem ajustes automáticos:
-- Botões maiores em celular
-- TouchInputBegan detectado automaticamente
-- GUI se adapta ao tamanho da tela
-
-## 🐛 Troubleshooting
-
-| Problema | Solução |
-|----------|---------|
-| GUI não aparece | Verifique se o LocalScript está em StarterGui |
-| Teleporte não funciona | Confirme que há um LocalScript em StarterCharacterScripts |
-| Brainrot não detecta | Verifique se o Script está dentro do objeto e se a rede permite |
-| GUI cortada em celular | Ajuste os valores de UDim2 nos códigos |
-
-## 📚 Estrutura do Projeto
-
-```
-roblox-instant-tp-system/
-├── README.md
-├── src/
-│   ├── GUI_InstantTP_Script.lua          # Interface Arcade
-│   ├── Teleport_Handler_Script.lua       # Sistema de teleporte
-│   ├── Brainrot_Detector_Script.lua      # Detecção automática
-│   └── CONFIG.lua                         # Configurações globais
-└── docs/
-    └── INSTALLATION_GUIDE.md              # Guia de instalação detalhado
-```
-
-## 🎯 Dicas Importantes
-
-1. **Sempre teste em modo Play** antes de publicar
-2. **Use a mesma CFrame para teleportar** sem bugs de respawn
-3. **Coloque o Brainrot_Detector em ServerScriptService** se for um item global
-4. **Sincronize as posições** entre cliente e servidor para evitar falhas de rede
-5. **Ajuste o tamanho dos botões** conforme seu jogo
-
-## 📝 Licença
-
-Livre para uso em seus projetos Roblox!
+## Tempo: 5 Minutos ⏱️
 
 ---
 
-**Criado com ❤️ para Roblox Studio**
+## Passo 1️⃣: Criar a ScreenGui
+
+1. Abra **Roblox Studio**
+2. Vá em **StarterGui**
+3. Clique com direita → **Insert Object** → **ScreenGui**
+4. Renomeie para: `InstantTPGui`
+
+---
+
+## Passo 2️⃣: Inserir o Script Principal
+
+1. Clique em **InstantTPGui** (a gui que você criou)
+2. Clique com direita → **Insert Object** → **LocalScript**
+3. **Delete** o código padrão
+4. **Copie e Cole** o conteúdo de `src/COMPLETE_UNIFIED_SCRIPT.lua`
+5. Salve (Ctrl+S)
+
+---
+
+## Passo 3️⃣: Configurar a Posição da Base
+
+1. Abra o script que você acabou de colar
+2. Procure por esta linha:
+   ```lua
+   local BASE_POSITION = Vector3.new(0, 5, 0)
+   ```
+3. Mude para a posição da sua base:
+   ```lua
+   local BASE_POSITION = Vector3.new(100, 50, 200)
+   ```
+   *(Substitua 100, 50, 200 pelas coordenadas da sua base)*
+
+---
+
+## Passo 4️⃣: Testar
+
+1. Clique em **Play** (F5) no Roblox Studio
+2. Você deve ver o painel azul/roxo no canto superior direito
+3. Teste os botões!
+
+---
+
+## 🎮 Como Usar
+
+### Desktop
+| Ação | Como fazer |
+|------|------------|
+| **Salvar Posição** | Clique no botão `💾 SALVAR POS` ou Pressione **F** |
+| **Teleportar** | Clique no botão `🎯 INSTANT TP` ou Pressione **G** |
+| **Coletar Brainrot** | Apenas toque e será teleportado automaticamente! |
+
+### Mobile
+| Ação | Como fazer |
+|------|------------|
+| **Salvar Posição** | Toque no botão `💾 SALVAR POS` |
+| **Teleportar** | Toque no botão `🎯 INSTANT TP` |
+| **Coletar Brainrot** | Toque no Brainrot e será teleportado! |
+
+---
+
+## ⚠️ Troubleshooting
+
+### ❌ GUI não aparece
+- Verifique se LocalScript está em `StarterGui > InstantTPGui`
+- Abra o Output (View → Output) e procure por erros (em vermelho)
+- Teste com Play (F5)
+
+### ❌ Teleporte não funciona
+- Salve uma posição PRIMEIRO (pressione F ou clique em SALVAR POS)
+- Certifique-se de que o personagem está vivo
+- Verifique se a base está em um lugar acessível
+
+### ❌ Brainrot não teleporta
+- O script detecta automaticamente itens chamados "brainrot"
+- Certifique-se que a posição da base está correta
+- Verifique se `AUTO_TELEPORT_ENABLED = true`
+
+### ❌ GUI cortada em celular
+- Ajuste o tamanho em `mainPanel.Size`
+- Reduza o tamanho dos botões
+
+---
+
+## 📚 Próximos Passos
+
+✅ Leia `docs/INSTALLATION_GUIDE.md` para guia visual completo  
+✅ Veja `docs/EXEMPLOS_ADICIONAIS.lua` para extras (sons, efeitos, etc)  
+✅ Edite `src/CONFIG.lua` para personalizar cores e configurações  
+
+---
+
+**Pronto para jogar! 🎮**

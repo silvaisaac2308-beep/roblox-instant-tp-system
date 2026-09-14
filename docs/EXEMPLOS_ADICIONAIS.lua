@@ -1,283 +1,280 @@
 -- ============================================
--- EXEMPLOS ADICIONAIS - INSTANT TP SYSTEM
--- Use estes scripts para funcionalidades extras
+-- EXEMPLOS ADICIONAIS - EXTRAS E RECURSOS
+-- Use esses exemplos para expandir o sistema
 -- ============================================
 
 -- ============================================
--- EXEMPLO 1: TELEPORTE COM EFEITO VISUAL
--- Coloque este código dentro de GUI_InstantTP_Script.lua
+-- EXEMPLO 1: EFEITOS VISUAIS DE TELEPORTE
 -- ============================================
 
---[[
-local function createTeleportEffect(position)
-	-- Criar esfera de luz
-	local effect = Instance.new("Part")
-	effect.Shape = Enum.PartType.Ball
-	effect.Size = Vector3.new(2, 2, 2)
-	effect.Position = position
-	effect.CanCollide = false
-	effect.Material = Enum.Material.Neon
-	effect.Color = Color3.fromRGB(0, 255, 255)
-	effect.TopSurface = Enum.SurfaceType.Smooth
-	effect.BottomSurface = Enum.SurfaceType.Smooth
-	effect.Parent = workspace
+local function teleportWithEffects(targetCFrame)
+	local character = game.Players.LocalPlayer.Character
+	local hrp = character:FindFirstChild("HumanoidRootPart")
 	
-	-- Animar
-	local tween = TweenService:Create(
-		effect,
-		TweenInfo.new(0.5),
-		{Size = Vector3.new(0, 0, 0), Transparency = 1}
-	)
-	tween:Play()
+	if hrp then
+		-- Criar partícula de saída
+		local particles = Instance.new("ParticleEmitter")
+		particles.Parent = hrp
+		particles.Enabled = true
+		particles.Rate = 50
+		particles.Speed = NumberRange.new(10, 20)
+		particles.Lifetime = NumberRange.new(0.5, 1)
+		particles.Color = ColorSequence.new(Color3.fromRGB(0, 255, 255))
+		
+		-- Aguardar um pouco
+		wait(0.3)
+		
+		-- Desabilitar partículas
+		particles.Enabled = false
+		
+		-- Teletransportar
+		hrp.CFrame = targetCFrame
+		
+		-- Efeito pós-teleporte
+		particles.Enabled = true
+		wait(0.5)
+		particles.Enabled = false
+	end
+end
+
+-- ============================================
+-- EXEMPLO 2: SONS AO TELEPORTAR
+-- ============================================
+
+local function teleportWithSound(targetCFrame)
+	local character = game.Players.LocalPlayer.Character
+	local hrp = character:FindFirstChild("HumanoidRootPart")
 	
-	-- Remover após animação
-	tween.Completed:Connect(function()
-		effect:Destroy()
-	end)
-end
---]]
-
--- ============================================
--- EXEMPLO 2: SISTEMA DE MÚLTIPLAS POSIÇÕES
--- Salvar até 3 posições diferentes
--- ============================================
-
---[[
-local savedPositions = {
-	pos1 = nil,
-	pos2 = nil,
-	pos3 = nil
-}
-
-local function savePositionSlot(slot)
-	local currentCharacter = player.Character
-	if currentCharacter then
-		local hrp = currentCharacter:FindFirstChild("HumanoidRootPart")
-		if hrp then
-			savedPositions[slot] = hrp.CFrame
-			print("✅ Posição salva em slot:", slot)
-		end
+	if hrp then
+		-- Som de saída
+		local soundOut = Instance.new("Sound")
+		soundOut.Parent = hrp
+		soundOut.SoundId = "rbxassetid://553641081" -- Som neon
+		soundOut.Volume = 0.5
+		soundOut:Play()
+		
+		wait(0.2)
+		
+		-- Teletransportar
+		hrp.CFrame = targetCFrame
+		
+		-- Som de entrada
+		local soundIn = Instance.new("Sound")
+		soundIn.Parent = hrp
+		soundIn.SoundId = "rbxassetid://553641081"
+		soundIn.Volume = 0.5
+		soundIn.PlayOnRemove = true
+		game:GetService("Debris"):AddItem(soundIn, 2)
 	end
 end
 
-local function teleportToSlot(slot)
-	if savedPositions[slot] then
-		local currentCharacter = player.Character
-		if currentCharacter then
-			local hrp = currentCharacter:FindFirstChild("HumanoidRootPart")
-			if hrp then
-				hrp.CFrame = savedPositions[slot]
-				print("🎯 Teleportado para slot:", slot)
-			end
-		end
-	end
-end
-
--- Usar com teclas: F para pos1, G para pos2, H para pos3
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	if input.KeyCode == Enum.KeyCode.F then savePositionSlot("pos1")
-	elseif input.KeyCode == Enum.KeyCode.G then teleportToSlot("pos1")
-	elseif input.KeyCode == Enum.KeyCode.H then savePositionSlot("pos2")
-	elseif input.KeyCode == Enum.KeyCode.J then teleportToSlot("pos2")
-	end
-end)
---]]
-
 -- ============================================
--- EXEMPLO 3: SOM AO TELEPORTAR
--- Adicione efeito sonoro
+-- EXEMPLO 3: SISTEMA DE COOLDOWN
 -- ============================================
 
---[[
-local function teleportWithSound()
-	if savedPosition then
-		local currentCharacter = player.Character
-		if currentCharacter then
-			local hrp = currentCharacter:FindFirstChild("HumanoidRootPart")
-			if hrp then
-				-- Criar som
-				local sound = Instance.new("Sound")
-				sound.SoundId = "rbxassetid://1197822498"  -- Som de teleporte do Roblox
-				sound.Volume = 0.5
-				sound.Parent = hrp
-				sound:Play()
-				
-				-- Teleportar
-				hrp.CFrame = savedPosition
-				
-				-- Remover som após terminar
-				game:GetService("Debris"):AddItem(sound, 2)
-			end
-		end
-	end
-end
---]]
-
--- ============================================
--- EXEMPLO 4: TELEPORTE COM COOLDOWN
--- Evitar spam de teletransporte
--- ============================================
-
---[[
 local lastTeleportTime = 0
-local TELEPORT_COOLDOWN = 1  -- 1 segundo entre teletransportes
+local TELEPORT_COOLDOWN = 1 -- 1 segundo de cooldown
 
-local function teleportWithCooldown()
+local function teleportWithCooldown(targetCFrame)
 	local currentTime = tick()
+	
 	if currentTime - lastTeleportTime < TELEPORT_COOLDOWN then
-		print("⏳ Aguarde", TELEPORT_COOLDOWN, "segundos para teleportar novamente")
-		return
+		print("⏳ Aguarde " .. string.format("%.1f", TELEPORT_COOLDOWN - (currentTime - lastTeleportTime)) .. "s")
+		return false
 	end
 	
 	lastTeleportTime = currentTime
-	teleportToSaved()
+	
+	local character = game.Players.LocalPlayer.Character
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	
+	if hrp then
+		hrp.CFrame = targetCFrame
+		print("✅ Teleportado!")
+		return true
+	end
+	
+	return false
 end
---]]
 
 -- ============================================
--- EXEMPLO 5: MOSTRAR DISTÂNCIA ATÉ POSIÇÃO SALVA
--- Atualizar informação na GUI
+-- EXEMPLO 4: MOSTRAR DISTÂNCIA ATÉ POSIÇÃO
 -- ============================================
 
---[[
-local function updateDistanceDisplay()
-	if savedPosition then
-		local currentCharacter = player.Character
-		if currentCharacter then
-			local hrp = currentCharacter:FindFirstChild("HumanoidRootPart")
-			if hrp then
-				local distance = (hrp.Position - savedPosition.Position).Magnitude
-				statusLabel.Text = "DIST: " .. math.floor(distance) .. " stud"
-				statusLabel.TextColor3 = neonColor
+local function showDistanceToPosition(targetPosition)
+	local character = game.Players.LocalPlayer.Character
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	
+	if hrp then
+		local distance = (hrp.Position - targetPosition).Magnitude
+		print("📍 Distância: " .. string.format("%.2f", distance) .. " studs")
+		return distance
+	end
+end
+
+-- ============================================
+-- EXEMPLO 5: MÚLTIPLAS POSIÇÕES SALVAS
+-- ============================================
+
+local savedPositions = {}
+
+local function savPositionWithName(name)
+	local character = game.Players.LocalPlayer.Character
+	local hrp = character:FindFirstChild("HumanoidRootPart")
+	
+	if hrp then
+		savedPositions[name] = hrp.CFrame
+		print("✅ Posição '" .. name .. "' salva!")
+	end
+end
+
+local function teleportToNamedPosition(name)
+	if savedPositions[name] then
+		local character = game.Players.LocalPlayer.Character
+		local hrp = character:FindFirstChild("HumanoidRootPart")
+		
+		if hrp then
+			hrp.CFrame = savedPositions[name]
+			print("🎯 Teleportado para '" .. name .. "'!")
+		end
+	else
+		print("⚠️ Posição '" .. name .. "' não encontrada!")
+	end
+end
+
+-- Exemplo de uso:
+-- savPositionWithName("base")
+-- savPositionWithName("loja")
+-- teleportToNamedPosition("base")
+
+-- ============================================
+-- EXEMPLO 6: MODO GHOST (ATRAVESSAR PAREDES)
+-- ============================================
+
+local isGhostMode = false
+
+local function toggleGhostMode()
+	local character = game.Players.LocalPlayer.Character
+	
+	for _, part in pairs(character:GetDescendants()) do
+		if part:IsA("BasePart") then
+			if isGhostMode then
+				part.CanCollide = true
+			else
+				part.CanCollide = false
 			end
 		end
 	end
+	
+	isGhostMode = not isGhostMode
+	print("👻 Modo Ghost: " .. (isGhostMode and "ATIVADO" or "DESATIVADO"))
 end
 
--- Atualizar a cada frame
-RunService.RenderStepped:Connect(updateDistanceDisplay)
---]]
-
 -- ============================================
--- EXEMPLO 6: NOTIFICAÇÃO VISUAL DE TELEPORTE
--- Mostrar mensagem na tela
+-- EXEMPLO 7: TELEPORTE COM ANIMAÇÃO SUAVE
 -- ============================================
 
---[[
-local function showNotification(text, duration)
-	duration = duration or 3
+local function smoothTeleport(targetCFrame, duration)
+	duration = duration or 0.5
 	
-	local notif = Instance.new("TextLabel")
-	notif.Size = UDim2.new(0, 300, 0, 50)
-	notif.Position = UDim2.new(0.5, -150, 0, 20)
-	notif.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-	notif.TextColor3 = Color3.fromRGB(0, 255, 255)
-	notif.TextScaled = true
-	notif.Font = Enum.Font.GothamBold
-	notif.Text = text
-	notif.Parent = screenGui
+	local character = game.Players.LocalPlayer.Character
+	local hrp = character:FindFirstChild("HumanoidRootPart")
 	
-	wait(duration)
-	notif:Destroy()
+	if hrp then
+		local tweenService = game:GetService("TweenService")
+		local tweenInfo = TweenInfo.new(
+			duration,
+			Enum.EasingStyle.Quad,
+			Enum.EasingDirection.InOut
+		)
+		
+		local tween = tweenService:Create(hrp, tweenInfo, {CFrame = targetCFrame})
+		tween:Play()
+	end
 end
 
--- Uso:
--- showNotification("✅ Teleportado!", 2)
---]]
-
 -- ============================================
--- EXEMPLO 7: VERIFICAR SE POSIÇÃO É SEGURA
--- Evitar teleportar para lugares com dano
+-- EXEMPLO 8: TELEPORTE COM CONFIRMAÇÃO
 -- ============================================
 
---[[
-local function isSafePosition(position)
-	-- Verificar se há lava, picos ou perigos perto
-	local region = Region3.new(position - Vector3.new(5, 5, 5), position + Vector3.new(5, 5, 5))
-	region = region:ExpandToGrid(4)
+local function teleportWithConfirmation(targetCFrame, timeoutSeconds)
+	timeoutSeconds = timeoutSeconds or 5
 	
-	local dangerParts = workspace:FindPartBoundsInRegion3(region, nil, 100)
+	print("❓ Teleportar? Digite 'sim' no chat em " .. timeoutSeconds .. "s...")
 	
-	for _, part in pairs(dangerParts) do
-		if part.Name:find("Lava") or part.Name:find("Spike") or part.Name:find("Danger") then
-			return false
+	local answered = false
+	local confirmed = false
+	
+	local startTime = tick()
+	
+	-- Simular confirmação (em um jogo real, usaria eventos de chat)
+	wait(1) -- Aguardar resposta
+	confirmed = true
+	answered = true
+	
+	if confirmed then
+		local character = game.Players.LocalPlayer.Character
+		local hrp = character:FindFirstChild("HumanoidRootPart")
+		
+		if hrp then
+			hrp.CFrame = targetCFrame
+			print("✅ Teleportado!")
 		end
-	end
-	
-	return true
-end
---]]
-
--- ============================================
--- EXEMPLO 8: LIMPAR BUFFER DE POSIÇÕES
--- Quando o jogo reinicia
--- ============================================
-
---[[
-local function clearAllSavedPositions()
-	savedPosition = nil
-	savedPositions = {pos1 = nil, pos2 = nil, pos3 = nil}
-	statusLabel.Text = "🔄 POSIÇÕES LIMPAS"
-	print("🔄 Todas as posições foram limpas")
-end
-
--- Chamar ao começar novo jogo
-clearAllSavedPositions()
---]]
-
--- ============================================
--- EXEMPLO 9: EXPORTAR POSIÇÕES PARA JSON
--- Salvar e carregar posições persistentes
--- ============================================
-
---[[
-local function exportPositions()
-	local positions = {
-		["pos1"] = {x = savedPosition.X, y = savedPosition.Y, z = savedPosition.Z}
-	}
-	
-	-- Em um jogo real, você enviaria para um servidor/database
-	print("Posições exportadas:", positions)
-	return positions
-end
-
-local function importPositions(data)
-	if data.pos1 then
-		savedPosition = CFrame.new(data.pos1.x, data.pos1.y, data.pos1.z)
-		print("✅ Posições carregadas do arquivo")
+	else
+		print("❌ Teleporte cancelado!")
 	end
 end
---]]
 
 -- ============================================
--- EXEMPLO 10: MODO GHOST (ATRAVESSAR PAREDES)
--- Teleporte super seguro
+-- EXEMPLO 9: TELEPORTE PARA JOGADOR
 -- ============================================
 
---[[
-local function ghostTeleport()
-	if savedPosition then
-		local currentCharacter = player.Character
-		if currentCharacter then
-			local hrp = currentCharacter:FindFirstChild("HumanoidRootPart")
+local function teleportToPlayer(playerName)
+	local targetPlayer = game.Players:FindFirstChild(playerName)
+	
+	if targetPlayer and targetPlayer.Character then
+		local targetHrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+		
+		if targetHrp then
+			local character = game.Players.LocalPlayer.Character
+			local hrp = character:FindFirstChild("HumanoidRootPart")
+			
 			if hrp then
-				-- Desativar colisão temporariamente
-				hrp.CanCollide = false
-				
-				-- Teletransportar
-				hrp.CFrame = savedPosition
-				
-				-- Reativar colisão após um frame
-				game:GetService("RunService").Heartbeat:Wait()
-				hrp.CanCollide = true
-				
-				print("👻 Teleporte Ghost concluído")
+				hrp.CFrame = targetHrp.CFrame + Vector3.new(5, 0, 0)
+				print("🎯 Teleportado para " .. playerName .. "!")
 			end
 		end
+	else
+		print("⚠️ Jogador '" .. playerName .. "' não encontrado!")
 	end
 end
---]]
 
-print("✅ Exemplos carregados com sucesso!")
-print("📚 Descomente os exemplos que deseja usar")
+-- ============================================
+-- EXEMPLO 10: MACRO DE TELEPORTE RÁPIDO
+-- ============================================
+
+local UserInputService = game:GetService("UserInputService")
+
+local teleportMacros = {
+	[Enum.KeyCode.One] = Vector3.new(0, 5, 0),
+	[Enum.KeyCode.Two] = Vector3.new(50, 5, 0),
+	[Enum.KeyCode.Three] = Vector3.new(-50, 5, 0),
+}
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	
+	if teleportMacros[input.KeyCode] then
+		local targetPosition = teleportMacros[input.KeyCode]
+		local character = game.Players.LocalPlayer.Character
+		local hrp = character:FindFirstChild("HumanoidRootPart")
+		
+		if hrp then
+			hrp.CFrame = CFrame.new(targetPosition)
+			print("⚡ Macro TP: " .. tostring(targetPosition))
+		end
+	end
+end)
+
+print("✅ Exemplos adicionais carregados!")
+print("📚 Use as funções acima em seus scripts para expandir as funcionalidades.")
